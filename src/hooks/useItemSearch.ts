@@ -12,18 +12,15 @@ export default function useItemSearch() {
   const [items, setItems] = useState<ItemEntry[]>([]);
 
   useEffect(() => {
-    console.log('Tentando carregar itens do JSON...');
     fetch('/data/items.json')
       .then((res) => res.json())
       .then((data) => {
         setItems(data);
-        console.log('Itens carregados:', data.length);
       })
       .catch((error) => console.error('Erro ao carregar items.json:', error));
   }, []);
 
   const search = useCallback((query: string) => {
-    console.log('Buscando por:', query);
     if (!query) return [];
     const lowerCaseQuery = query.toLocaleLowerCase();
     const results = items
@@ -43,8 +40,6 @@ export default function useItemSearch() {
         return name.toLocaleLowerCase().includes(lowerCaseQuery);
       })
       .slice(0, 10);
-    
-    console.log('Resultados da busca:', results.length);
     return results;
   }, [items]);
 
