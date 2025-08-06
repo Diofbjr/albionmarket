@@ -1,7 +1,26 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import useItemSearch from '../hooks/useItemSearch';
+import {
+  Command,
+  CommandInput,
+  CommandList,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+} from '@/components/ui/command';
+import {
+  Card,
+  CardContent,
+} from '@/components/ui/card';
+
+// Tipo de dado para um item de busca
+type SearchItem = {
+  uniqueName?: string;
+  LocalizedNames?: { 'PT-BR'?: string };
+  LocalizationNameVariable?: string;
+};
 
 interface Props {
   onItemSelected: (itemId: string) => void;
@@ -9,28 +28,13 @@ interface Props {
 
 export default function SearchBar({ onItemSelected }: Props) {
   const [query, setQuery] = useState('');
-  const [suggestions, setSuggestions] = useState<{
-    uniqueName?: string;
-    LocalizedNames?: { 'PT-BR'?: string };
-    LocalizationNameVariable?: string;
-  }[]>([]);
+  const [debouncedQuery, setDebouncedQuery] = useState('');
+  const [suggestions, setSuggestions] = useState<SearchItem[]>([]);
+  const [open, setOpen] = useState(false);
   const { search } = useItemSearch();
 
-  useEffect(() => {
-    if (query) {
-      setSuggestions(search(query));
-    } else {
-      setSuggestions([]);
-    }
-  }, [query, search]);
-
-  const handleChange = (value: string) => {
-    setQuery(value);
-  };
-
-  const getUniqueName = (
-    item: { uniqueName?: string; LocalizationNameVariable?: string }
-  ): string | undefined => {
+  // Função utilitária para extrair o nome único
+  const getUniqueName = (item: SearchItem): string | undefined => {
     if (item.uniqueName) {
       return item.uniqueName;
     }
@@ -40,17 +44,60 @@ export default function SearchBar({ onItemSelected }: Props) {
     return undefined;
   };
 
-  const handleSelect = (
-    item: {
-      uniqueName?: string;
-      LocalizedNames?: { 'PT-BR'?: string };
-      LocalizationNameVariable?: string;
+  // Função utilitária para extrair o Tier
+  const getTier = (uniqueName: string | undefined): string | undefined => {
+    if (!uniqueName) {
+      return undefined;
     }
-  ) => {
-    const uniqueName = getUniqueName(item);
+    const match = uniqueName.match(/^T\d+/);
+    return match ? match[0] : undefined;
+  };
 
-    setQuery(item.LocalizedNames?.['PT-BR'] ?? uniqueName ?? '');
-    setSuggestions([]);
+  // Efeito para debounce na query de busca
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedQuery(query);
+    }, 300);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [query]);
+
+  // Efeito para buscar e processar os resultados
+  useEffect(() => {
+    if (debouncedQuery) {
+      const results = search(debouncedQuery);
+
+      const seen = new Set();
+      const uniqueResults = results.filter((item) => {
+        const uniqueName = getUniqueName(item);
+        const tier = getTier(uniqueName);
+        const displayName = `${item.LocalizedNames?.['PT-BR'] ?? uniqueName ?? ''}${tier ? ` (${tier})` : ''}`;
+        
+        if (seen.has(displayName)) {
+          return false;
+        }
+        seen.add(displayName);
+        return true;
+      });
+
+      setSuggestions(uniqueResults);
+      setOpen(uniqueResults.length > 0);
+    } else {
+      setSuggestions([]);
+      setOpen(false);
+    }
+  }, [debouncedQuery, search]);
+
+  const handleSelect = (item: SearchItem) => {
+    const uniqueName = getUniqueName(item);
+    const tier = getTier(uniqueName);
+
+    const displayName = `${item.LocalizedNames?.['PT-BR'] ?? uniqueName ?? ''}${tier ? ` (${tier})` : ''}`;
+
+    setQuery(displayName);
+    setOpen(false);
 
     if (uniqueName) {
       onItemSelected(uniqueName);
@@ -59,30 +106,44 @@ export default function SearchBar({ onItemSelected }: Props) {
     }
   };
 
+  const getDisplayValue = (item: SearchItem): string => {
+    const uniqueName = getUniqueName(item);
+    const tier = getTier(uniqueName);
+    return `${item.LocalizedNames?.['PT-BR'] ?? uniqueName ?? ''}${tier ? ` (${tier})` : ''}`;
+  };
+
   return (
-    <div className="relative w-full max-w-md mx-auto">
-      <input
-        type="text"
-        placeholder="Digite o nome do item"
-        value={query}
-        onChange={(e) => handleChange(e.target.value)}
-        className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm
-                   focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500
-                   transition duration-150 ease-in-out"
-      />
-      {suggestions.length > 0 && (
-        <ul className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
-          {suggestions.map((item, index) => (
-            <li
-              key={index}
-              onClick={() => handleSelect(item)}
-              className="px-4 py-2 cursor-pointer hover:bg-gray-100 transition duration-150 ease-in-out text-gray-800"
-            >
-              {item.LocalizedNames?.['PT-BR'] ?? getUniqueName(item)}
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+    <Card className="relative w-full max-w-md mx-auto">
+      <CardContent>
+        <Command shouldFilter={false} className="rounded-lg border shadow-md">
+          <CommandInput
+            placeholder="Digite o nome do item"
+            value={query}
+            onValueChange={(value) => setQuery(value)}
+            className="h-9"
+          />
+          {open && (
+            <CommandList className="absolute top-full z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
+              {suggestions.length === 0 && query.length > 0 ? (
+                <CommandEmpty>Nenhum item encontrado.</CommandEmpty>
+              ) : (
+                <CommandGroup>
+                  {suggestions.map((item, index) => (
+                    <CommandItem
+                      key={index}
+                      value={getDisplayValue(item)}
+                      onSelect={() => handleSelect(item)}
+                      className="p-2 cursor-pointer hover:bg-gray-100"
+                    >
+                      {getDisplayValue(item)}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              )}
+            </CommandList>
+          )}
+        </Command>
+      </CardContent>
+    </Card>
   );
 }
