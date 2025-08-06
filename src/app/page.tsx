@@ -123,7 +123,7 @@ export default function HomePage() {
         setSelectedItemForHistory({ itemId, city: null, quality: null });
       }
       
-      setCurrentView('history');
+      setCurrentView('table'); // <-- Linha modificada para 'table'
 
     } catch (error) {
       console.error('Failed to fetch prices:', error);
