@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Table,
   TableBody,
@@ -38,9 +38,10 @@ type SortableCityPrices = CityPrices & {
 
 interface Props {
   rows: CityPrices[];
+  selectedQualities: { [city: string]: number };
+  handleQualityChange: (city: string, value: string) => void;
 }
 
-// Hook personalizado para lógica de ordenação
 const useSortableData = (
   items: SortableCityPrices[],
   config: { key: 'city' | 'sell_price_min' | 'buy_price_max'; direction: 'ascending' | 'descending' } | null = null,
@@ -80,9 +81,7 @@ const useSortableData = (
   return { items: sortedItems, requestSort, sortConfig };
 };
 
-export default function PriceTable({ rows }: Props) {
-  const [selectedQualities, setSelectedQualities] = useState<{ [city: string]: number }>({});
-
+export default function PriceTable({ rows, selectedQualities, handleQualityChange }: Props) {
   const rowsWithQualities = useMemo(() => {
     return rows.map(cityData => {
       const qualitiesWithPrices = Object.keys(cityData.pricesByQuality)
@@ -96,7 +95,6 @@ export default function PriceTable({ rows }: Props) {
 
   const { items, requestSort, sortConfig } = useSortableData(rowsWithQualities);
 
-  // Alteração aqui: style foi alterado para 'decimal' para remover o R$
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'decimal',
@@ -156,13 +154,6 @@ export default function PriceTable({ rows }: Props) {
       return <FaSortUp className="inline ml-1" />;
     }
     return <FaSortDown className="inline ml-1" />;
-  };
-
-  const handleQualityChange = (city: string, value: string) => {
-    setSelectedQualities(prev => ({
-      ...prev,
-      [city]: Number(value),
-    }));
   };
 
   return (
