@@ -216,6 +216,7 @@ export default function HomePage() {
                       <Button
                         variant={currentView === 'history' ? 'default' : 'outline'}
                         onClick={() => setCurrentView('history')}
+                        disabled
                       >
                         Histórico
                       </Button>
