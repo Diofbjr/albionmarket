@@ -8,36 +8,17 @@ import {
   YAxis,
   Tooltip,
   Legend,
-  ResponsiveContainer
+  ResponsiveContainer,
 } from 'recharts';
 import { ChartContainer, ChartTooltipContent } from '@/components/ui/chart';
+import { PriceData } from '../../types/types';
+import { chartConfig } from '../../lib/chartConfig';
 
-type PriceData = {
-  city: string;
-  sell_price_min: number;
-  buy_price_max: number;
-};
-
-interface PriceBarChartProps {
+interface ChartProps {
   data: PriceData[];
 }
 
-const chartConfig = {
-  venda: {
-    label: 'Preço de Venda Mínimo',
-    color: 'hsl(142.1 76.2% 36.3%)', // Verde para venda
-  },
-  compra: {
-    label: 'Preço de Compra Máximo',
-    color: 'hsl(0 84.2% 60.2%)', // Vermelho para compra
-  },
-};
-
-export default function PriceBarChart({ data }: PriceBarChartProps) {
-  if (!data || data.length === 0) {
-    return <p className="text-center text-muted-foreground text-lg">Sem dados de preços para exibir no gráfico.</p>;
-  }
-
+export default function Chart({ data }: ChartProps) {
   return (
     <ChartContainer config={chartConfig} className="min-h-[400px] w-full">
       <ResponsiveContainer width="100%" height="100%">
@@ -56,8 +37,8 @@ export default function PriceBarChart({ data }: PriceBarChartProps) {
           <YAxis />
           <Tooltip content={<ChartTooltipContent />} />
           <Legend />
-          <Bar dataKey="sell_price_min" name="Preço de Venda Mínimo" fill="hsl(142.1 76.2% 36.3%)" radius={4} />
-          <Bar dataKey="buy_price_max" name="Preço de Compra Máximo" fill="hsl(0 84.2% 60.2%)" radius={4} />
+          <Bar dataKey="sell_price_min" name="Preço de Venda Mínimo" fill={chartConfig.venda.color} radius={4} />
+          <Bar dataKey="buy_price_max" name="Preço de Compra Máximo" fill={chartConfig.compra.color} radius={4} />
         </BarChart>
       </ResponsiveContainer>
     </ChartContainer>

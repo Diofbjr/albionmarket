@@ -1,10 +1,7 @@
 'use client';
 
-import { Server } from './lib/api';
 import {
   Select,
-  SelectContent,
-  SelectItem,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
@@ -15,13 +12,10 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { Server, ServerSelectProps } from '../../types/types';
+import ServerSelectContent from './ServerSelectContent';
 
-interface Props {
-  server: Server;
-  onChange: (server: Server) => void;
-}
-
-export default function ServerSelect({ server, onChange }: Props) {
+export default function ServerSelect({ server, onChange }: ServerSelectProps) {
   return (
     <Card className="w-full max-w-sm">
       <CardHeader>
@@ -33,11 +27,7 @@ export default function ServerSelect({ server, onChange }: Props) {
           <SelectTrigger>
             <SelectValue placeholder="Selecione o servidor" />
           </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="west">West (Américas)</SelectItem>
-            <SelectItem value="east">East (Ásia)</SelectItem>
-            <SelectItem value="europe">Europe</SelectItem>
-          </SelectContent>
+          <ServerSelectContent />
         </Select>
       </CardContent>
     </Card>
