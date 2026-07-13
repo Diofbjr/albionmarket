@@ -91,6 +91,6 @@ ApiHistoryLocationGroup: Agrupamento hierárquico por localizações retornado n
 
 CityPrices: Estrutura interna otimizada para chaveamento rápido indexado por qualidade ([quality: number]).
 
-##📝 Licença
+## 📝 Licença
 Este projeto está sob a licença MIT. Consulte o arquivo LICENSE para obter mais detalhes.
 
