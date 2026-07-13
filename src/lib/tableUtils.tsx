@@ -13,25 +13,26 @@ export const getHighlightClassAndIcon = (
   columnKey: 'sell_price_min' | 'buy_price_max',
   highlightInfo: { minSell: number | null; maxBuy: number | null }
 ) => {
-  if (columnKey === 'sell_price_min') {
-    if (value === highlightInfo.minSell) {
-      return { className: 'bg-green-100 text-green-800 font-bold', icon: <FaArrowDown className="ml-1 text-green-500" /> };
-    }
+  if (columnKey === 'sell_price_min' && value === highlightInfo.minSell) {
+    return { 
+      className: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-bold px-2 py-1 rounded-md transition-colors', 
+      icon: <FaArrowDown className="ml-1 text-emerald-500 animate-pulse text-xs" /> 
+    };
   }
-  if (columnKey === 'buy_price_max') {
-    if (value === highlightInfo.maxBuy) {
-      return { className: 'bg-green-100 text-green-800 font-bold', icon: <FaArrowUp className="ml-1 text-green-500" /> };
-    }
+  if (columnKey === 'buy_price_max' && value === highlightInfo.maxBuy) {
+    return { 
+      className: 'bg-blue-500/15 text-blue-600 dark:text-blue-400 font-bold px-2 py-1 rounded-md transition-colors', 
+      icon: <FaArrowUp className="ml-1 text-blue-500 dark:text-blue-400 animate-pulse text-xs" /> 
+    };
   }
   return { className: '', icon: null };
 };
 
 export const getSortIcon = (name: string, sortConfig: SortConfig) => {
-  if (sortConfig?.key !== name) {
-    return <FaSort className="inline ml-1" />;
+  if (!sortConfig || sortConfig.key !== name) {
+    return <FaSort className="ml-1 opacity-40 text-xs text-muted-foreground" />;
   }
-  if (sortConfig.direction === 'ascending') {
-    return <FaSortUp className="inline ml-1" />;
-  }
-  return <FaSortDown className="inline ml-1" />;
+  return sortConfig.direction === 'ascending' 
+    ? <FaSortUp className="ml-1 text-xs text-primary" /> 
+    : <FaSortDown className="ml-1 text-xs text-primary" />;
 };

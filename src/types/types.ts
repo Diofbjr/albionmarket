@@ -61,3 +61,31 @@ export interface ServerSelectProps {
   onChange: (server: Server) => void;
 }
 
+export interface PriceRowFromApi {
+  city: string;
+  sell_price_min: number;
+  buy_price_max: number;
+  quality: number;
+}
+
+export interface SelectedHistoryState {
+  city: string;
+  quality: number;
+}
+
+export interface ApiHistoryDataPoint {
+  itemCount: number;
+  averagePrice: number;
+  timestamp: string;
+}
+
+export interface ApiHistoryLocationGroup {
+  location: string;
+  itemTypeId: string;
+  qualityLevel: number;
+  data: ApiHistoryDataPoint[];
+}
+
+export interface HTTPDataWrapper {
+  data: unknown;
+}

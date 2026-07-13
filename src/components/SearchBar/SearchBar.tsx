@@ -3,11 +3,10 @@
 import { useState, useEffect } from 'react';
 import useItemSearch from '../../hooks/useItemSearch';
 import { Command } from '@/components/ui/command';
-import { Card, CardContent } from '@/components/ui/card';
 import SearchInput from './SearchInput';
 import SearchResults from './SearchResults';
 import { SearchItem, SearchBarProps } from '../../types/types';
-import { getUniqueName, getTier, getDisplayValue } from '../../lib/searchUtils';
+import { getUniqueName, getDisplayValue } from '../../lib/searchUtils';
 
 export default function SearchBar({ onItemSelected }: SearchBarProps) {
   const [query, setQuery] = useState('');
@@ -49,23 +48,21 @@ export default function SearchBar({ onItemSelected }: SearchBarProps) {
   };
 
   return (
-    <Card className="relative w-full max-w-md mx-auto">
-      <CardContent>
-        <Command shouldFilter={false} className="rounded-lg border shadow-md">
-          <SearchInput
-            query={query}
-            onQueryChange={setQuery}
-            onDebouncedQueryChange={setDebouncedQuery}
+    <div className="relative w-full max-w-md mx-auto z-50">
+      <Command shouldFilter={false} className="rounded-xl border border-border bg-popover shadow-md transition-all">
+        <SearchInput
+          query={query}
+          onQueryChange={setQuery}
+          onDebouncedQueryChange={setDebouncedQuery}
+        />
+        {open && (
+          <SearchResults
+            suggestions={suggestions}
+            query={debouncedQuery}
+            onSelect={handleSelect}
           />
-          {open && (
-            <SearchResults
-              suggestions={suggestions}
-              query={query}
-              onSelect={handleSelect}
-            />
-          )}
-        </Command>
-      </CardContent>
-    </Card>
+        )}
+      </Command>
+    </div>
   );
 }

@@ -53,10 +53,13 @@ export default function PriceTable({ rows, selectedQualities, handleQualityChang
   }
 
   return (
-    <Card className="overflow-x-auto rounded-lg border">
+    <Card className="overflow-x-auto rounded-xl border border-border bg-card shadow-sm transition-colors duration-300">
       <CardContent className="p-0">
         <Table>
-          <TableCaption>Tabela de preços por cidade e qualidade. Clique nos cabeçalhos para ordenar. O preço de venda ideal para lucro é o **menor**, e o preço de compra ideal é o **maior**.</TableCaption>
+          <TableCaption className="text-muted-foreground/80 px-4 py-3 text-xs border-t border-border/40">
+            Tabela de preços por cidade e qualidade. Clique nos cabeçalhos para ordenar. 
+            O preço de venda ideal para lucro é o <strong className="text-foreground font-semibold">menor</strong>, e o preço de compra ideal é o <strong className="text-foreground font-semibold">maior</strong>.
+          </TableCaption>
           <TableHeader sortConfig={sortConfig} onRequestSort={requestSort} />
           <TableBody>
             {items.map((cityData, index) => (

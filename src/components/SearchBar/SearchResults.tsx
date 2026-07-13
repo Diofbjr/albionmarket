@@ -17,9 +17,11 @@ interface SearchResultsProps {
 
 export default function SearchResults({ suggestions, query, onSelect }: SearchResultsProps) {
   return (
-    <CommandList className="absolute top-full z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
+    <CommandList className="absolute top-full left-0 z-50 w-full mt-2 bg-popover border border-border rounded-xl shadow-xl max-h-64 overflow-y-auto p-1 animate-in fade-in-50 slide-in-from-top-1 duration-200">
       {suggestions.length === 0 && query.length > 0 ? (
-        <CommandEmpty>Nenhum item encontrado.</CommandEmpty>
+        <CommandEmpty className="p-4 text-center text-sm text-muted-foreground">
+          Nenhum item encontrado.
+        </CommandEmpty>
       ) : (
         <CommandGroup>
           {suggestions.map((item, index) => (
@@ -27,7 +29,7 @@ export default function SearchResults({ suggestions, query, onSelect }: SearchRe
               key={index}
               value={getDisplayValue(item)}
               onSelect={() => onSelect(item)}
-              className="p-2 cursor-pointer hover:bg-gray-100"
+              className="flex items-center px-3 py-2.5 my-0.5 rounded-lg cursor-pointer text-sm text-popover-foreground transition-colors hover:bg-accent hover:text-accent-foreground data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground"
             >
               {getDisplayValue(item)}
             </CommandItem>
