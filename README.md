@@ -61,7 +61,7 @@ Siga os passos abaixo para rodar a aplicação no seu ambiente local:
 
 1. Clonar o Repositório
 ```text
-git clone [https://github.com/seu-usuario/nome-do-repositorio.git](https://github.com/seu-usuario/nome-do-repositorio.git)
+git clone https://github.com/Diofbjr/albionmarket
 cd nome-do-repositorio
 ```
 2. Instalar as Dependências
